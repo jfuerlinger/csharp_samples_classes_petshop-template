@@ -1,0 +1,1 @@
+# csharp_samples_classes_petshop-template
