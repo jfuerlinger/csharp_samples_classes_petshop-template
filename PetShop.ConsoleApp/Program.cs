@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Channels;
 
 namespace PetShop.ConsoleApp
 {
@@ -10,12 +11,13 @@ namespace PetShop.ConsoleApp
     public bool IsVaccinated { get; set; }
     public string Birthday { get; set; }
 
-    public Pet(int id, string kind, string name, string birthday)
+    public Pet(int id, string name, string kind, string birthday)
     {
       Id = id;
       Kind = kind;
       Name = name;
       Birthday = birthday;
+      IsVaccinated = false;
     }
   }
 
@@ -27,7 +29,7 @@ namespace PetShop.ConsoleApp
     static void Main(string[] args)
     {
 
-
+      InitPets();
 
       int cmd;
 
@@ -82,7 +84,15 @@ namespace PetShop.ConsoleApp
       Console.WriteLine("Have a nice day.");
     }
 
-
+    private static void InitPets()
+    {
+      pets = new Pet[]
+      {
+        new Pet(++id, "Susi", "Cat", "Friday"),
+        new Pet(++id, "Hansi", "Rabbit", "Tuesday"),
+        new Pet(++id, "Marlene", "Cat", "Monday")
+      };
+    }
 
 
     /// <summary>
@@ -127,7 +137,17 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void PrintVaccinationList()
     {
-      throw new NotImplementedException();
+      Console.Clear();
+      Console.WriteLine("Vaccinated pets list:");
+      for (int i = 0; i < id; i++)
+      {
+        if (pets[i].IsVaccinated)
+        {
+          Console.WriteLine($"{pets[i].Id,3}{pets[i].Name,10}{pets[i].Kind,10}{pets[i].Birthday,10}");
+        }
+      }
+
+      Console.ReadKey();
     }
 
     /// <summary>
@@ -138,7 +158,23 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void VaccinatePet()
     {
-      throw new NotImplementedException();
+      bool isSuccess = false;
+
+      while (!isSuccess)
+      {
+        Console.WriteLine("Please enter valid id:");
+        int enteredId = Convert.ToInt32(Console.ReadLine());
+
+        if (enteredId > id || enteredId < 0)
+        {
+          Console.WriteLine("Invalid id - please try again!");
+        }
+        else
+        {
+          pets[enteredId].IsVaccinated = true;
+          isSuccess = true;
+        }
+      }
     }
 
     /// <summary>
@@ -147,7 +183,46 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void PrintPetStatistics()
     {
-      throw new NotImplementedException();
+      int count = 0;
+      string[] kinds = new string[id];
+      bool kindAlreadyInList = false;
+
+      for (int i = 0; i < id; i++) // über alle pets iterieren
+      {
+        string kindOfCurrentPet = pets[i].Kind;
+
+        kindAlreadyInList = false;
+        for (int j = 0; j < kinds.Length; j++)
+        {
+          if (kindOfCurrentPet == kinds[j])
+          {
+            kindAlreadyInList = true;
+          }
+        }
+        if (!kindAlreadyInList)
+        {
+          kinds[count++] = pets[i].Kind;
+        }
+      }
+
+
+      Console.WriteLine("Pet statistics:");
+
+      for (int i = 0; i < count; i++)
+      {
+        int sum = 0;
+        for (int j = 0; j < id; j++)
+        {
+          if (kinds[i] == pets[j].Kind)
+          {
+            sum++;
+          }
+        }
+
+        Console.WriteLine($"{kinds[i]}: {sum}");
+      }
+
+      Console.ReadKey();
     }
   }
 }
