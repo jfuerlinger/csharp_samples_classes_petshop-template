@@ -2,11 +2,36 @@
 
 namespace PetShop.ConsoleApp
 {
+  class Pet
+  {
+    public int Id { get; private set; }
+    public string Kind { get; private set; }
+    public string Name { get; private set; }
+    public bool IsVaccinated { get; set; }
+    public string Birthday { get; private set; }
+
+    public Pet(int id, string name, string kind, string birthday)
+    {
+      Id = id;
+      Kind = kind;
+      Name = name;
+      IsVaccinated = false;
+      Birthday = birthday;
+    }
+  }
+
+
   class Program
   {
+    static Pet[] pets = new Pet[100];
+    static int nrOfPets = 0;
+
     static void Main(string[] args)
     {
       int cmd;
+
+      InitPets();
+      PrintPetStatistics();
 
       do
       {
@@ -15,7 +40,7 @@ namespace PetShop.ConsoleApp
 
         Console.WriteLine("Operations: ");
         Console.WriteLine("   0 ... Exit");
-        Console.WriteLine("   1 ... Add pet");
+        Console.WriteLine("   1 ... Add new pet");
         Console.WriteLine("   2 ... List all pets");
         Console.WriteLine("   3 ... Print vaccination list");
         Console.WriteLine("   4 ... Vaccinate pet");
@@ -58,7 +83,15 @@ namespace PetShop.ConsoleApp
       Console.WriteLine("Have a nice day.");
     }
 
-    
+    private static void InitPets()
+    {
+      pets = new Pet[]
+      {
+        new Pet(++nrOfPets, "Susi", "Cat", "Friday"),
+        new Pet(++nrOfPets, "Hansi", "Rabbit", "Tuesday"),
+        new Pet(++nrOfPets, "Marlene", "Cat", "Monday")
+      };
+    }
 
 
     /// <summary>
@@ -69,7 +102,18 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void AddNewPet()
     {
-      throw new NotImplementedException();
+      Console.Write("Name: ");
+      string name = Console.ReadLine();
+
+      Console.Write("Kind: ");
+      string kind = Console.ReadLine();
+
+      Console.Write("Birthday: ");
+      string birthday = Console.ReadLine();
+
+      pets[nrOfPets] = new Pet(nrOfPets + 1, kind, name, birthday);
+      nrOfPets++;
+
     }
 
     /// <summary>
@@ -77,7 +121,15 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void ListAllPets()
     {
-      throw new NotImplementedException();
+      Console.Clear();
+      Console.WriteLine("Pet list:");
+
+      for (int i = 0; i < nrOfPets; i++)
+      {
+        Console.WriteLine($"{pets[i].Id,-3}{pets[i].Name,-10} {pets[i].Kind,-10} {pets[i].Birthday,-10}");
+      }
+
+      Console.ReadKey();
     }
 
     /// <summary>
@@ -86,7 +138,18 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void PrintVaccinationList()
     {
-      throw new NotImplementedException();
+      Console.Clear();
+      Console.WriteLine("Vaccinated pets:");
+
+      for (int i = 0; i < nrOfPets; i++)
+      {
+        if (pets[i].IsVaccinated)
+        {
+          Console.WriteLine($"{pets[i].Id,-3}{pets[i].Name,-10} {pets[i].Kind,-10} {pets[i].Birthday,-10}");
+        }
+      }
+
+      Console.ReadKey();
     }
 
     /// <summary>
@@ -97,7 +160,28 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void VaccinatePet()
     {
-      throw new NotImplementedException();
+      bool isValidId = true;
+      int petId;
+
+      do
+      {
+        Console.Write("Please enter the id of the pet to be vaccinated: ");
+        petId = Convert.ToInt32(Console.ReadLine());
+
+        if (petId < 1 || petId > nrOfPets)
+        {
+          isValidId = false;
+          Console.WriteLine("Invalid id - please repeat!");
+        }
+        else
+        {
+          isValidId = true;
+        }
+
+      } while (!isValidId);
+
+
+      pets[petId].IsVaccinated = true;
     }
 
     /// <summary>
@@ -106,7 +190,58 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void PrintPetStatistics()
     {
-      throw new NotImplementedException();
+      string[] kinds = new string[nrOfPets];
+
+      bool kindAlreadyInList = false;
+      int nrOfKinds = 0;
+
+      for (int i = 0; i < pets.Length; i++)
+      {
+        kindAlreadyInList = false;
+        for (int j = 0; j < nrOfKinds && !kindAlreadyInList; j++)
+        {
+          if (pets[i].Kind == kinds[j])
+          {
+            kindAlreadyInList = true;
+          }
+        }
+
+        if (!kindAlreadyInList)
+        {
+          kinds[nrOfKinds++] = pets[i].Kind;
+        }
+
+      }
+
+      Console.Clear();
+      Console.WriteLine("Statistics:");
+
+      for (int i = 0; i < nrOfKinds; i++)
+      {
+        string kind = kinds[i];
+        int cntOfKind = CountPetsOfKind(kind);
+
+        Console.WriteLine($"{kind, -10}: { cntOfKind }");
+      }
+
+    }
+
+
+    // -> Beispielaufruf  CountPetsOfKind("Rabbit") -> 1
+    // -> Beispielaufruf  CountPetsOfKind("Cat") -> 2
+    private static int CountPetsOfKind(string kind)
+    {
+      int count = 0;
+
+      for (int i = 0; i < nrOfPets; i++)
+      {
+        if (pets[i].Kind == kind)
+        {
+          count++;
+        }
+      }
+
+      return count;
     }
   }
 }
