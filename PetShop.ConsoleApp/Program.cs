@@ -2,10 +2,33 @@
 
 namespace PetShop.ConsoleApp
 {
+  class Pet
+  {
+    public int Id { get; set; }
+    public string Kind { get; set; }
+    public string Name { get; set; }
+    public bool IsVaccinated { get; set; }
+    public string Birthday { get; set; }
+
+    public Pet(int id, string kind, string name, string birthday)
+    {
+      Id = id;
+      Kind = kind;
+      Name = name;
+      Birthday = birthday;
+    }
+  }
+
   class Program
   {
+    static int id = 0;
+    static Pet[] pets = new Pet[100];
+
     static void Main(string[] args)
     {
+
+
+
       int cmd;
 
       do
@@ -34,6 +57,7 @@ namespace PetShop.ConsoleApp
 
           case 1:
             AddNewPet();
+            id++;
             break;
 
           case 2:
@@ -58,7 +82,7 @@ namespace PetShop.ConsoleApp
       Console.WriteLine("Have a nice day.");
     }
 
-    
+
 
 
     /// <summary>
@@ -69,7 +93,17 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void AddNewPet()
     {
-      throw new NotImplementedException();
+      Console.Write("Name: ");
+      string name = Console.ReadLine();
+
+      Console.Write("Kind: ");
+      string kind = Console.ReadLine();
+
+      Console.Write("Birthday: ");
+      string birthday = Console.ReadLine();
+
+      Pet pet = new Pet(id + 1, kind, name, birthday);
+      pets[id] = pet;
     }
 
     /// <summary>
@@ -77,7 +111,14 @@ namespace PetShop.ConsoleApp
     /// </summary>
     private static void ListAllPets()
     {
-      throw new NotImplementedException();
+      Console.Clear();
+      Console.WriteLine("Pets list:");
+      for (int i = 0; i < id; i++)
+      {
+        Console.WriteLine($"{pets[i].Id,3 }{pets[i].Name,10 }{pets[i].Kind,10 }{pets[i].Birthday,10}");
+      }
+
+      Console.ReadKey();
     }
 
     /// <summary>
